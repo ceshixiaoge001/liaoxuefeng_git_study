@@ -1,18 +1,41 @@
 ﻿开始动手学习git管理工具的使用
 1.第一步：
 	在要进行版本控制的目录下使用git init 命令对文件夹进行初始化，形成一个git仓库，后续再仓库中的操作会自动被git管理工具跟踪
-	git add 命令将文件添加到暂存区，git rm --cached 命令将已经添加到暂存区的文件跟踪删除，文件重新变为只在工作区存在
+	git add 命令将文件添加到暂存区，
+	git restore --staged filename 命令将已经添加到暂存区的文件撤回到工作区，文件为待add状态
+	git restore filename 命令是将工作区文件恢复到和版本库一致，如果文件在暂存区则恢复到和暂存区一致
 	git commit -m 命令将所有暂存区文件提交保存到本地仓库
 2.第二步：
 	修改工作区文件，使用git status 命令来查看当前仓库文件状态，使用git diff 命令来对比工作区文件和仓库文件或暂存区文件的不同点
+	使用git log 命令来查看仓库的日志信息，然而有些信息会在git reset --hard 后消失，这是可使用git reflog命令来查看之前对哪个
+	文件进行了什么操作
 3.第三步：
 	深入了解git diff 命令的使用
-		（1）git diff：当工作区有改动，临时区为空，diff的对比是“工作区与最后一次commit提交的仓库的共同文件”；当工作区有改动，临时区不为空，diff对比的是“工作区与暂存区的共同文件”。
+		（1）git diff：当工作区有改动，临时区为空，diff的对比是“工作区与最后一次commit提交的仓库的共同文件”；当工作区有改动，
+			临时区不为空，diff对比的是“工作区与暂存区的共同文件”。
 
-		（2）git diff --cached 或 git diff --staged：显示暂存区(已add但未commit文件)和最后一次commit(HEAD)之间的所有不相同文件的增删改(git diff --cached和git diff –staged相同作用)
+		（2）git diff --cached 或 git diff --staged：显示暂存区(已add但未commit文件)和最后一次commit(HEAD)之间的所有不相同
+			文件的增删改(git diff --cached和git diff –staged相同作用)
 
-		（3）git diff HEAD：显示工作目录(已track但未add文件)和暂存区(已add但未commit文件)与最后一次commit之间的的所有不相同文件的增删改。
+		（3）git diff HEAD：显示工作目录(已track但未add文件)和暂存区(已add但未commit文件)与最后一次commit之间的的所有不相同
+			文件的增删改。
 
-			（3.1）git diff HEAD~X或git diff HEAD^^^…(后面有X个^符号，X为正整数):可以查看最近一次提交的版本与往过去时间线前数X个的版本之间的所有同(3)中定义文件之间的增删改。
+			（3.1）git diff HEAD~X或git diff HEAD^^^…(后面有X个^符号，X为正整数):可以查看最近一次提交的版本与往过去时间线
+				前数X个的版本之间的所有同(3)中定义文件之间的增删改。
 
 		（4）git diff <分支名1> <分支名2> ：比较两个分支上最后 commit 的内容的差别
+4.第四步：
+	仓库中的文件可以用git reset 命令来进行回滚操作，将文件回滚到之前的版本
+		（1）git reset --soft HEAD~X(X为正整数)用此命令来将仓库的文件版本回滚到上x个版本，而且之前的版本文件此时回到暂存区
+			和工作区变为待commit状态，HEAD~x也可使用文件的索引号来代替
+		（2）git reset --mixed HEAD~X(X为正整数)用此命令来将仓库的文件版本回滚到上x个版本，而且之前的版本文件此时回到工作区
+			变为待add状态，HEAD~x也可使用文件的索引号来代替
+		（3）git reset --hard HEAD~X(X为正整数)用此命令来将仓库的文件版本回滚到上x个版本，而且之前的版本文件此时也全部消失，
+			工作区文件变为回滚后的版本文件
+5.第五步：
+	深入了解git rm 命令的使用
+		（1）rm：是仅仅删除工作区里的文件，但若需要删除缓存区和版本库上的文件，需要先执行git add, 然后执行git commit -m "delete xxx"；.
+		（2）git rm：相当于rm + git add, 即工作区和缓存区中都删除了该文件，若想推到本地仓库只需git commit -m "delete xxx"即可
+			删除仓库中的该文件，
+		（3）git rm --cached filename 命令将已经添加到暂存区的文件删除，并且在暂存区形成一个删除该文件的记录，提交该记录可将版本库中的
+			该文件删除，并且工作区存在的该文件变为Untracked状态文件
